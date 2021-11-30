@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Weapons/BaseWeapon.h"
+#include "Weapons/Pistol.h"
 
 // Sets default values
 APlayerVRCharacter::APlayerVRCharacter()
@@ -95,6 +96,7 @@ void APlayerVRCharacter::FireRightWeapon()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("PAWN FIRE"));
 		Weapon->Fire();
 	}
+
 }
 
 void APlayerVRCharacter::FireLeftWeapon()

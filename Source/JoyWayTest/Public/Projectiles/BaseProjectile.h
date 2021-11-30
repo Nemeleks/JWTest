@@ -40,6 +40,8 @@ public:
 
 	UFUNCTION()
 	void OnProjectileStop( const FHitResult& ImpactResult);
+
+	void FireInDirection(const FVector& ShootDirection);
 };
 
 

@@ -6,9 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "Interfaces/ICollectable.h"
 #include "Projectiles/BaseProjectile.h"
+#include "Components/ArrowComponent.h"
 #include "BaseWeapon.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class JOYWAYTEST_API ABaseWeapon : public AActor, public IICollectable
 {
 	GENERATED_BODY()
@@ -28,16 +29,16 @@ protected:
 	USceneComponent* GrabComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components");
-	class UArrowComponent* ProjectileSpawnPoint;
+	UArrowComponent* ProjectileSpawnPoint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo");
 	TSubclassOf<ABaseProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-	int32 ClipSize = 10;
+	int32 ClipSize = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-	int32 MaxAmmo = 50;
+	int32 MaxAmmo = 0;
 
 	
 public:	
@@ -51,7 +52,7 @@ public:
 	virtual void Drop(class UMotionControllerComponent* MotionController) override;
 
 	UFUNCTION()
-	void Fire();
+	virtual void Fire() ;
 
 	UFUNCTION()
 	void Reload();
@@ -65,8 +66,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Collectable")
 	class UMotionControllerComponent* CurrentMotionController;
 
-private:
 	int32 CurrentAmmo;
 	int32 CurrentAmmoInClip;
+
+private:
+
 	
 };

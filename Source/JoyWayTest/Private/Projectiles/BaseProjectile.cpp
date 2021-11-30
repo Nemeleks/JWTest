@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interfaces/Damageable.h"
+#include "Player/PlayerVRCharacter.h"
 #include "Weapons/BaseWeapon.h"
 
 // Sets default values
@@ -47,7 +48,7 @@ void ABaseProjectile::Tick(float DeltaTime)
 void ABaseProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ABaseProjectile>(OtherActor) || Cast<ABaseWeapon>(OtherActor))
+	if (Cast<ABaseProjectile>(OtherActor) || Cast<ABaseWeapon>(OtherActor) || Cast<APlayerVRCharacter>(OtherActor))
 	{
 		return;
 	}
@@ -73,4 +74,9 @@ void ABaseProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCom
 void ABaseProjectile::OnProjectileStop(const FHitResult& ImpactResult)
 {
 	Destroy();
+}
+
+void ABaseProjectile::FireInDirection(const FVector& ShootDirection)
+{
+	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }

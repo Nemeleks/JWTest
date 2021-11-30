@@ -2,7 +2,7 @@
 
 
 #include "Weapons/BaseWeapon.h"
-#include "Components/ArrowComponent.h"
+
 
 
 // Sets default values
@@ -12,8 +12,8 @@ ABaseWeapon::ABaseWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetSimulatePhysics(true);
+	RootComponent = MeshComponent;
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawnPoint->SetupAttachment(MeshComponent);
@@ -77,17 +77,7 @@ void ABaseWeapon::Drop(UMotionControllerComponent* MotionController)
 
 void ABaseWeapon::Fire()
 {
-	if (CurrentAmmoInClip > 0)
-	{
-		CurrentAmmoInClip -= 1;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("WEAPON FIRE!!"));
-		FActorSpawnParameters Params;
-		Params.Instigator = GetInstigator();
-		Params.Owner = this;
-		FVector SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
-		FRotator SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
-		GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, Params);
-	}
+
 }
 
 void ABaseWeapon::Reload()
