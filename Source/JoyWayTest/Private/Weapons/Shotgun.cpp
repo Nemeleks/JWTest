@@ -26,13 +26,12 @@ void AShotgun::Fire()
 		Params.Owner = this;
 		FVector SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
 		FRotator SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
-		for (int32 i = 0; i <= NumberOfBullets; ++i)
+		for (int32 i = 0; i < NumberOfBullets; ++i)
 		{
-			FVector RandDirection = FMath::VRandCone(ProjectileSpawnPoint->GetForwardVector(), 0.07f);
+			FVector RandDirection = FMath::VRandCone(ProjectileSpawnPoint->GetForwardVector(), ConeHalfAngleRad);
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *RandDirection.ToString());
 			ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass,SpawnLocation, SpawnRotation, Params);
 			Projectile->FireInDirection(RandDirection);
 		}
-
 	}
 }

@@ -13,5 +13,6 @@ UCLASS()
 class JOYWAYTEST_API AMachineGun : public ABaseWeapon
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void Fire() override;
 };
