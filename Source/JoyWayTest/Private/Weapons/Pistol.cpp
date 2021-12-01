@@ -15,6 +15,11 @@ void APistol::Tick(float DeltaSeconds)
 
 void APistol::Fire()
 {
+	Super::Fire();
+	if (bIsReloading)
+	{
+		return;
+	}
 	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, TEXT("WEAPON FIRE!!"));
 	if (CurrentAmmoInClip > 0)
 	{

@@ -80,8 +80,16 @@ void ABaseWeapon::Fire()
 
 }
 
+void ABaseWeapon::StopFire()
+{
+}
+
 void ABaseWeapon::Reload()
 {
+	if (CurrentAmmo < 1)
+	{
+		return;
+	}
 	int32 AmmoToAdd = ClipSize - CurrentAmmoInClip;
 	if (CurrentAmmo < AmmoToAdd)
 	{
@@ -89,4 +97,12 @@ void ABaseWeapon::Reload()
 	}
 	CurrentAmmoInClip += AmmoToAdd;
 	CurrentAmmo -= AmmoToAdd;
+	bIsReloading = true;
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ABaseWeapon::ReloadTimer,ReloadRate, bIsLoopReload, ReloadDelay);
+}
+
+void ABaseWeapon::ReloadTimer()
+{
+	bIsReloading = false;
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
 }

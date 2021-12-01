@@ -67,8 +67,7 @@ void ABaseProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		Destroy();
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("%s overlapped %s"), *GetName(), *OtherActor->GetName());
+	
 }
 
 void ABaseProjectile::OnProjectileStop(const FHitResult& ImpactResult)

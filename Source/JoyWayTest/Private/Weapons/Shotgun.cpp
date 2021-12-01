@@ -15,8 +15,12 @@ void AShotgun::Tick(float DeltaSeconds)
 
 void AShotgun::Fire()
 {
-	Super::Fire();
 
+	if (bIsReloading)
+	{
+		return;
+	}
+	
 	if (CurrentAmmoInClip > 0)
 	{
 		CurrentAmmoInClip -= 1;
@@ -29,7 +33,6 @@ void AShotgun::Fire()
 		for (int32 i = 0; i < NumberOfBullets; ++i)
 		{
 			FVector RandDirection = FMath::VRandCone(ProjectileSpawnPoint->GetForwardVector(), ConeHalfAngleRad);
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *RandDirection.ToString());
 			ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass,SpawnLocation, SpawnRotation, Params);
 			Projectile->FireInDirection(RandDirection);
 		}

@@ -40,6 +40,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 	int32 MaxAmmo = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Reload")
+	float ReloadRate = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Reload")
+	float ReloadDelay = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Reload")
+	bool bIsLoopReload = false;
+
 	
 public:	
 	// Called every frame
@@ -52,10 +61,19 @@ public:
 	virtual void Drop(class UMotionControllerComponent* MotionController) override;
 
 	UFUNCTION()
-	virtual void Fire() ;
+	virtual void Fire();
+
+	UFUNCTION()
+	virtual void StopFire();
 
 	UFUNCTION()
 	void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentAmmo() const {return CurrentAmmo;}
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentAmmoInClip() const {return CurrentAmmoInClip;}
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Collectable")
@@ -68,6 +86,11 @@ protected:
 
 	int32 CurrentAmmo;
 	int32 CurrentAmmoInClip;
+
+	FTimerHandle ReloadTimerHandle;
+	bool bIsReloading = false;
+
+	void ReloadTimer();
 
 private:
 

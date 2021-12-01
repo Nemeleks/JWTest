@@ -69,6 +69,9 @@ private:
 	void FireRightWeapon();
 	void FireLeftWeapon();
 
+	void StopFireRightWeapon();
+	void StopFireLeftWeapon();
+
 	void GrabRightPressed();
 	void GrabRightReleased();
 

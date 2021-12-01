@@ -8,7 +8,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Weapons/BaseWeapon.h"
-#include "Weapons/Pistol.h"
 
 // Sets default values
 APlayerVRCharacter::APlayerVRCharacter()
@@ -57,16 +56,6 @@ void APlayerVRCharacter::BeginPlay()
 void APlayerVRCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//
-	// if (!bIsRotate)
-	// {
-	// 	bIsRotate = true;
-	// 	FRotator CurrentRotation = GetActorRotation();
-	// 	FRotator NewRotation(0.f, CurrentRotation.Yaw+SnapTurnDegrees*TurnAxisValue, 0.f);
-	// 	SetActorRotation(NewRotation);
-	// 	GetWorld()->GetTimerManager().SetTimer(TurnDelayTimerHandle, this, &APlayerVRCharacter::ResetRotationDelay, TurnDelayRate, false, -1 );
-	// }
-	
 }
 
 // Called to bind functionality to input
@@ -85,8 +74,10 @@ void APlayerVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("GrabLeft", IE_Released, this, &APlayerVRCharacter::GrabLeftReleased);
 
 	PlayerInputComponent->BindAction("FireRightWeapon", IE_Pressed, this, &APlayerVRCharacter::FireRightWeapon);
-	PlayerInputComponent->BindAction("FireLeftWeapon", IE_Pressed, this, &APlayerVRCharacter::FireLeftWeapon);
+	PlayerInputComponent->BindAction("FireRightWeapon", IE_Released, this, &APlayerVRCharacter::StopFireRightWeapon);
 	
+	PlayerInputComponent->BindAction("FireLeftWeapon", IE_Pressed, this, &APlayerVRCharacter::FireLeftWeapon);
+	PlayerInputComponent->BindAction("FireLeftWeapon", IE_Released, this, &APlayerVRCharacter::StopFireLeftWeapon);
 }
 
 void APlayerVRCharacter::FireRightWeapon()
@@ -105,6 +96,22 @@ void APlayerVRCharacter::FireLeftWeapon()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("PAWN FIRE"));
 		Weapon->Fire();
+	}
+}
+
+void APlayerVRCharacter::StopFireRightWeapon()
+{
+	if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(RightHeldObject))
+	{
+		Weapon->StopFire();
+	}
+}
+
+void APlayerVRCharacter::StopFireLeftWeapon()
+{
+	if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(LeftHeldObject))
+	{
+		Weapon->StopFire();
 	}
 }
 
