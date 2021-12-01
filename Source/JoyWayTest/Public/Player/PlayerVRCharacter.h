@@ -43,6 +43,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class USphereComponent* RightCollider;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UWidgetComponent* LeftWeaponAmmo;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UWidgetComponent* RightWeaponAmmo;
+	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float SnapTurnDegrees = 30.f;
@@ -59,6 +66,18 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetRightWeaponAmmo() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetRightWeaponAmmoInClip() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetLeftWeaponAmmo() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetLeftWeaponAmmoInClip() const;
 
 private:
 

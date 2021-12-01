@@ -6,6 +6,7 @@
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "Weapons/BaseWeapon.h"
 
@@ -43,13 +44,20 @@ APlayerVRCharacter::APlayerVRCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(VRRoot);
 
+	LeftWeaponAmmo = CreateDefaultSubobject<UWidgetComponent>(TEXT("LeftWeaponAmmo"));
+	LeftWeaponAmmo->SetupAttachment(LeftMoController);
+
+	RightWeaponAmmo = CreateDefaultSubobject<UWidgetComponent>(TEXT("RightWeaponAmmo"));
+	RightWeaponAmmo->SetupAttachment(RightMoController);
+
 }
 
 // Called when the game starts or when spawned
 void APlayerVRCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	LeftWeaponAmmo->SetVisibility(false);
+	RightWeaponAmmo->SetVisibility(false);
 }
 
 // Called every frame
@@ -78,6 +86,62 @@ void APlayerVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	
 	PlayerInputComponent->BindAction("FireLeftWeapon", IE_Pressed, this, &APlayerVRCharacter::FireLeftWeapon);
 	PlayerInputComponent->BindAction("FireLeftWeapon", IE_Released, this, &APlayerVRCharacter::StopFireLeftWeapon);
+}
+
+float APlayerVRCharacter::GetRightWeaponAmmo() const
+{
+	if (RightHeldObject)
+	{
+		if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(RightHeldObject))
+		{
+			return Weapon->GetCurrentAmmo();
+		}
+			return 0.f;
+	}
+	
+	return 0.f;
+}
+
+float APlayerVRCharacter::GetRightWeaponAmmoInClip() const
+{
+	if (RightHeldObject)
+	{
+		if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(RightHeldObject))
+		{
+			return Weapon->GetCurrentAmmoInClip();
+		}
+		return 0.f;
+	}
+	
+	return 0.f;
+}
+
+float APlayerVRCharacter::GetLeftWeaponAmmo() const
+{
+	if (LeftHeldObject)
+	{
+		if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(LeftHeldObject))
+		{
+			return Weapon->GetCurrentAmmo();
+		}
+		return 0.f;
+	}
+	
+	return 0.f;
+}
+
+float APlayerVRCharacter::GetLeftWeaponAmmoInClip() const
+{
+	if (LeftHeldObject)
+	{
+		if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(LeftHeldObject))
+		{
+			return Weapon->GetCurrentAmmoInClip();
+		}
+		return 0.f;
+	}
+	
+	return 0.f;
 }
 
 void APlayerVRCharacter::FireRightWeapon()
@@ -131,6 +195,10 @@ void APlayerVRCharacter::GrabRightPressed()
 		{
 			RightHeldObject = Collectable;
 			RightHeldObject->Grip(RightMoController);
+			if (Cast<ABaseWeapon>(RightHeldObject))
+			{
+				RightWeaponAmmo->SetVisibility(true);
+			}
 		}
 	}
 }
@@ -139,8 +207,13 @@ void APlayerVRCharacter::GrabRightReleased()
 {
 	if (RightHeldObject)
 	{
+		if (Cast<ABaseWeapon>(RightHeldObject))
+		{
+			RightWeaponAmmo->SetVisibility(false);
+		}
 		RightHeldObject->Drop(RightMoController);
 		RightHeldObject = nullptr;
+
 	}
 }
 
@@ -154,6 +227,10 @@ void APlayerVRCharacter::GrabLeftPressed()
 		{
 			LeftHeldObject = Collectable;
 			LeftHeldObject->Grip(LeftMoController);
+			if (Cast<ABaseWeapon>(LeftHeldObject))
+			{
+				LeftWeaponAmmo->SetVisibility(true);
+			}
 		}
 	}
 }
@@ -162,6 +239,10 @@ void APlayerVRCharacter::GrabLeftReleased()
 {
 	if (LeftHeldObject)
 	{
+		if (Cast<ABaseWeapon>(LeftHeldObject))
+		{
+			LeftWeaponAmmo->SetVisibility(false);
+		}
 		LeftHeldObject->Drop(LeftMoController);
 		LeftHeldObject = nullptr;
 	}
