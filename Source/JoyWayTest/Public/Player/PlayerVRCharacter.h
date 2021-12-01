@@ -7,8 +7,6 @@
 #include "Interfaces/Damageable.h"
 #include "PlayerVRCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDie);
-
 UCLASS()
 class JOYWAYTEST_API APlayerVRCharacter : public ACharacter, public IDamageable
 {
@@ -57,7 +55,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class UHealthComp* HealthComponent;
 	
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float SnapTurnDegrees = 30.f;
 
@@ -66,6 +63,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float TurnDelayRate = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Respawn")
+	float RepsawnRate = 1.f;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Respawn")
+	float RepsawnDelay = -1.f;
+
 
 public:	
 	// Called every frame
@@ -91,8 +95,6 @@ public:
 
 	UFUNCTION()
 	void OnDie();
-
-	FOnPlayerDie OnPlayerDie;
 
 private:
 
@@ -123,5 +125,8 @@ private:
 	
 	class IICollectable* RightHeldObject = nullptr;
 	class IICollectable* LeftHeldObject = nullptr;
+	
+	void RespawnPlayer();
+	
 };
 

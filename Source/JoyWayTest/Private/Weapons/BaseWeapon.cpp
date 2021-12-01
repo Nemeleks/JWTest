@@ -39,8 +39,6 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 	if (bIsHeld)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("%d/%d"), CurrentAmmoInClip, CurrentAmmo);
-
 		if (CurrentAmmoInClip == 0)
 		{
 			Reload();

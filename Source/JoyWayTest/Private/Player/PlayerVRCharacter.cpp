@@ -10,6 +10,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameModes/JWTestBaseGameMode.h"
 #include "Weapons/BaseWeapon.h"
 
 // Sets default values
@@ -67,11 +68,7 @@ void APlayerVRCharacter::BeginPlay()
 
 void APlayerVRCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	AController* CurrentController = GetWorld()->GetFirstPlayerController();
-	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
-	GameMode->RestartPlayer(CurrentController);
-	GrabLeftReleased();
-    GrabRightReleased();
+	RespawnPlayer();
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -166,19 +163,14 @@ void APlayerVRCharacter::ApplyDamage(float DamageAmount)
 
 void APlayerVRCharacter::OnDie()
 {
+	RespawnPlayer();
 	Destroy();
-	AController* CurrentController = GetWorld()->GetFirstPlayerController();
-	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
-	GameMode->RestartPlayer(CurrentController);
-	GrabLeftReleased();
-	GrabRightReleased();
 }
 
 void APlayerVRCharacter::FireRightWeapon()
 {
 	if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(RightHeldObject))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("PAWN FIRE"));
 		Weapon->Fire();
 	}
 
@@ -188,7 +180,6 @@ void APlayerVRCharacter::FireLeftWeapon()
 {
 	if (ABaseWeapon* Weapon = Cast<ABaseWeapon>(LeftHeldObject))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("PAWN FIRE"));
 		Weapon->Fire();
 	}
 }
@@ -213,6 +204,17 @@ void APlayerVRCharacter::ResetRotationDelay()
 {
 	bIsRotate = false;
 	GetWorld()->GetTimerManager().ClearTimer(TurnDelayTimerHandle);
+}
+
+void APlayerVRCharacter::RespawnPlayer()
+{
+	GrabLeftReleased();
+	GrabRightReleased();
+	AJWTestBaseGameMode* GameMode = Cast<AJWTestBaseGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->Respawn(GetWorld()->GetFirstPlayerController());
+	}
 }
 
 void APlayerVRCharacter::GrabRightPressed()

@@ -26,7 +26,6 @@ AShootingTarget::AShootingTarget()
 
 	HealthComp = CreateDefaultSubobject<UHealthComp>(TEXT("HealthComponent"));
 	HealthComp->OnDie.AddDynamic(this, &AShootingTarget::OnDie);
-	HealthComp->OnHealthChanged.AddDynamic(this, &AShootingTarget::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -46,15 +45,9 @@ void AShootingTarget::Tick(float DeltaTime)
 void AShootingTarget::ApplyDamage(float DamageAmount)
 {
 	HealthComp->TakeDamage(DamageAmount);
-	UE_LOG(LogTemp, Error, TEXT("%f"), HealthComp->GetHealth());
 }
 
 void AShootingTarget::OnDie()
 {
 	Destroy();
-}
-
-void AShootingTarget::OnHealthChanged(float DamageAmount)
-{
-	UE_LOG(LogTemp, Warning, TEXT("%s taked damage: %f"), *GetName(), DamageAmount);
 }

@@ -37,9 +37,6 @@ public:
 
 	UFUNCTION()
 	void OnDie();
-
-	UFUNCTION()
-	void OnHealthChanged(float DamageAmount);
 	
 };
 

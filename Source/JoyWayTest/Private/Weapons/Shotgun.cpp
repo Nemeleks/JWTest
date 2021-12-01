@@ -24,7 +24,6 @@ void AShotgun::Fire()
 	if (CurrentAmmoInClip > 0)
 	{
 		CurrentAmmoInClip -= 1;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, TEXT("WEAPON FIRE!!"));
 		FActorSpawnParameters Params;
 		Params.Instigator = GetInstigator();
 		Params.Owner = this;
