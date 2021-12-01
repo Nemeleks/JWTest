@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/Damageable.h"
 #include "PlayerVRCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDie);
+
 UCLASS()
-class JOYWAYTEST_API APlayerVRCharacter : public ACharacter
+class JOYWAYTEST_API APlayerVRCharacter : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
 
@@ -18,6 +21,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -50,6 +54,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class UWidgetComponent* RightWeaponAmmo;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UHealthComp* HealthComponent;
+	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float SnapTurnDegrees = 30.f;
@@ -78,6 +85,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetLeftWeaponAmmoInClip() const;
+
+	UFUNCTION()
+	virtual void ApplyDamage(float DamageAmount) override;
+
+	UFUNCTION()
+	void OnDie();
+
+	FOnPlayerDie OnPlayerDie;
 
 private:
 

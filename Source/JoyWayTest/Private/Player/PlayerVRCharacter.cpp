@@ -5,9 +5,11 @@
 
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/HealthComp.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "Weapons/BaseWeapon.h"
 
 // Sets default values
@@ -50,6 +52,9 @@ APlayerVRCharacter::APlayerVRCharacter()
 	RightWeaponAmmo = CreateDefaultSubobject<UWidgetComponent>(TEXT("RightWeaponAmmo"));
 	RightWeaponAmmo->SetupAttachment(RightMoController);
 
+	HealthComponent = CreateDefaultSubobject<UHealthComp>(TEXT("HealthComponent"));
+	HealthComponent->OnDie.AddDynamic(this, &ThisClass::APlayerVRCharacter::OnDie);
+
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +63,16 @@ void APlayerVRCharacter::BeginPlay()
 	Super::BeginPlay();
 	LeftWeaponAmmo->SetVisibility(false);
 	RightWeaponAmmo->SetVisibility(false);
+}
+
+void APlayerVRCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	AController* CurrentController = GetWorld()->GetFirstPlayerController();
+	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
+	GameMode->RestartPlayer(CurrentController);
+	GrabLeftReleased();
+    GrabRightReleased();
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -142,6 +157,21 @@ float APlayerVRCharacter::GetLeftWeaponAmmoInClip() const
 	}
 	
 	return 0.f;
+}
+
+void APlayerVRCharacter::ApplyDamage(float DamageAmount)
+{
+	HealthComponent->TakeDamage(DamageAmount);
+}
+
+void APlayerVRCharacter::OnDie()
+{
+	Destroy();
+	AController* CurrentController = GetWorld()->GetFirstPlayerController();
+	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
+	GameMode->RestartPlayer(CurrentController);
+	GrabLeftReleased();
+	GrabRightReleased();
 }
 
 void APlayerVRCharacter::FireRightWeapon()

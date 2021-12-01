@@ -33,7 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void ApplyDamage(float DamageAmount) override;
+	virtual void ApplyDamage(float DamageAmount) override;
 
 	UFUNCTION()
 	void OnDie();

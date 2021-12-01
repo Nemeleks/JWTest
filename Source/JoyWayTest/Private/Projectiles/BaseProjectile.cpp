@@ -48,7 +48,7 @@ void ABaseProjectile::Tick(float DeltaTime)
 void ABaseProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ABaseProjectile>(OtherActor) || Cast<ABaseWeapon>(OtherActor) || Cast<APlayerVRCharacter>(OtherActor))
+	if (Cast<ABaseProjectile>(OtherActor) || Cast<ABaseWeapon>(OtherActor))
 	{
 		return;
 	}
