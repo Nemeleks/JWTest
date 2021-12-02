@@ -3,6 +3,7 @@
 
 #include "Weapons/BaseWeapon.h"
 
+#include "MotionControllerComponent.h"
 
 
 // Sets default values

@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/ICollectable.h"
+#include "Interfaces/Collectable.h"
 #include "CollectableBase.generated.h"
 
-UCLASS()
-class JOYWAYTEST_API ACollectableBase : public AActor, public IICollectable
+UCLASS(Abstract)
+class JOYWAYTEST_API ACollectableBase : public AActor, public ICollectable
 {
 	GENERATED_BODY()
 	
@@ -23,8 +23,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* MeshComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class UBoxComponent* Collider; 
+
 
 public:	
 	// Called every frame

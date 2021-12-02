@@ -3,7 +3,7 @@
 
 #include "Collectable/CollectableBase.h"
 
-#include "Components/BoxComponent.h"
+#include "MotionControllerComponent.h"
 
 // Sets default values
 ACollectableBase::ACollectableBase()
@@ -20,9 +20,6 @@ ACollectableBase::ACollectableBase()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetSimulatePhysics(true);
-	
-	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
-	Collider->SetupAttachment(MeshComponent);
 
 	bIsHeld = false;
 }

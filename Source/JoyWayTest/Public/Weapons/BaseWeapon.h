@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/ICollectable.h"
 #include "Projectiles/BaseProjectile.h"
 #include "Components/ArrowComponent.h"
+#include "Interfaces/Collectable.h"
 #include "BaseWeapon.generated.h"
 
 UCLASS(Abstract)
-class JOYWAYTEST_API ABaseWeapon : public AActor, public IICollectable
+class JOYWAYTEST_API ABaseWeapon : public AActor, public ICollectable
 {
 	GENERATED_BODY()
 	

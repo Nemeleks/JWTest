@@ -54,6 +54,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class UHealthComp* HealthComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UWidgetComponent* HealthWidget;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float SnapTurnDegrees = 30.f;
@@ -64,12 +67,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float TurnDelayRate = 0.5f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Respawn")
-	float RepsawnRate = 1.f;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Respawn")
-	float RepsawnDelay = -1.f;
-
+	
 
 public:	
 	// Called every frame
@@ -89,6 +87,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetLeftWeaponAmmoInClip() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHealth() const;
 
 	UFUNCTION()
 	virtual void ApplyDamage(float DamageAmount) override;
@@ -123,8 +124,8 @@ private:
 
 	void ResetRotationDelay();
 	
-	class IICollectable* RightHeldObject = nullptr;
-	class IICollectable* LeftHeldObject = nullptr;
+	class ICollectable* RightHeldObject = nullptr;
+	class ICollectable* LeftHeldObject = nullptr;
 	
 	void RespawnPlayer();
 	

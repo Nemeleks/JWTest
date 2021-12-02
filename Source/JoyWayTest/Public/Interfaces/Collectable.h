@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "MotionControllerComponent.h"
-#include "ICollectable.generated.h"
+#include "Collectable.generated.h"
 
+class UMotionControllerComponent;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UICollectable : public UInterface
+class UCollectable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,12 +17,12 @@ class UICollectable : public UInterface
 /**
  * 
  */
-class JOYWAYTEST_API IICollectable
+class JOYWAYTEST_API ICollectable
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:
+	public:
 	UFUNCTION()
 	virtual void Grip(UMotionControllerComponent* MotionController) = 0;
 

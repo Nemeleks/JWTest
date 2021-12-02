@@ -56,6 +56,9 @@ APlayerVRCharacter::APlayerVRCharacter()
 	HealthComponent = CreateDefaultSubobject<UHealthComp>(TEXT("HealthComponent"));
 	HealthComponent->OnDie.AddDynamic(this, &ThisClass::APlayerVRCharacter::OnDie);
 
+	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
+	HealthWidget->SetupAttachment(CameraComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -156,6 +159,11 @@ float APlayerVRCharacter::GetLeftWeaponAmmoInClip() const
 	return 0.f;
 }
 
+float APlayerVRCharacter::GetCurrentHealth() const
+{
+	return HealthComponent->GetHealth();
+}
+
 void APlayerVRCharacter::ApplyDamage(float DamageAmount)
 {
 	HealthComponent->TakeDamage(DamageAmount);
@@ -223,7 +231,7 @@ void APlayerVRCharacter::GrabRightPressed()
 	RightCollider->GetOverlappingActors(OverlappedActors);
 	if (OverlappedActors.Num() > 0)
 	{
-		if (IICollectable* Collectable = Cast<IICollectable>(OverlappedActors[0]))
+		if (ICollectable* Collectable = Cast<ICollectable>(OverlappedActors[0]))
 		{
 			RightHeldObject = Collectable;
 			RightHeldObject->Grip(RightMoController);
@@ -255,7 +263,7 @@ void APlayerVRCharacter::GrabLeftPressed()
 	LeftCollider->GetOverlappingActors(OverlappedActors);
 	if (OverlappedActors.Num() > 0)
 	{
-		if (IICollectable* Collectable = Cast<IICollectable>(OverlappedActors[0]))
+		if (ICollectable* Collectable = Cast<ICollectable>(OverlappedActors[0]))
 		{
 			LeftHeldObject = Collectable;
 			LeftHeldObject->Grip(LeftMoController);
