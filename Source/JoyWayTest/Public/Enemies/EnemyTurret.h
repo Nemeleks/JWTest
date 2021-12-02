@@ -39,7 +39,7 @@ protected:
 	float TargetingRange = 2000.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-	float TargetingSpeed = 0.1f;
+	float TargetingSpeed = 70.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float Accuracy = 10.f;
