@@ -83,6 +83,11 @@ void ABaseWeapon::StopFire()
 {
 }
 
+void ABaseWeapon::DisablePhysics()
+{
+	MeshComponent->SetSimulatePhysics(false);
+}
+
 void ABaseWeapon::Reload()
 {
 	if (CurrentAmmo < 1)

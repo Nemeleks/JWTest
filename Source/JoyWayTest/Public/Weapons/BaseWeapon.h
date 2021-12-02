@@ -66,6 +66,8 @@ public:
 	UFUNCTION()
 	virtual void StopFire();
 
+	void DisablePhysics();
+
 	UFUNCTION()
 	void Reload();
 
