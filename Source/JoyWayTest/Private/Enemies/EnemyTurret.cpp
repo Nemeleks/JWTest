@@ -3,9 +3,11 @@
 
 #include "Enemies/EnemyTurret.h"
 
+#include "DrawDebugHelpers.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/HealthComp.h"
+#include "GameFramework/Character.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Weapons/BaseWeapon.h"
 
@@ -45,8 +47,6 @@ void AEnemyTurret::BeginPlay()
 		return;
 	}
 
-	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 	Weapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, WeaponSpawnPoint->GetComponentLocation(), WeaponSpawnPoint->GetComponentRotation());
 	Weapon->DisablePhysics();
 	Weapon->AttachToComponent(WeaponSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
@@ -57,9 +57,8 @@ void AEnemyTurret::BeginPlay()
 void AEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	Targeting();
-
 }
 
 void AEnemyTurret::ApplyDamage(float DamageAmount)
@@ -95,39 +94,59 @@ void AEnemyTurret::Targeting()
 
 bool AEnemyTurret::IsPlayerInRange()
 {
-    if (FVector::DistSquared(PlayerPawn->GetActorLocation(), GetActorLocation()) > FMath::Square(TargetingRange))
-    {
-        return false;
-    }
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!PlayerPawn)
+	{
+		return false;
+	}
+	if (FVector::DistSquared(PlayerPawn->GetActorLocation(), GetActorLocation()) > FMath::Square(TargetingRange))
+	{
+		return false;
+	}
 
-    FHitResult HitResult;
-    FVector TraceStart = WeaponSpawnPoint->GetComponentLocation();
-    FVector TraceEnd = PlayerPawn->GetActorLocation();
-    FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("Turret Vission Trace")), true, Weapon);
-    TraceParams.bReturnPhysicalMaterial = false;
+	FHitResult HitResult;
+	FVector TraceStart = Weapon->GetActorLocation();
+	FVector TraceEnd = PlayerPawn->GetActorLocation();
+	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("Turret Vission Trace")), true, Weapon);
+	TraceParams.bReturnPhysicalMaterial = false;
 
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, TraceParams))
-    {
-        if (HitResult.Actor == PlayerPawn)
-        {
-            return true;
-        }
-    }
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, TraceParams))
+	{
+		if (HitResult.Actor == PlayerPawn)
+		{
+			return true;
+		}
+	}
+	if (GetWorld()->GetTimerManager().IsTimerActive(FireTimerHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
+		Weapon->StopFire();
+	}
 
-    return false;
+	return false;
 }
 
 void AEnemyTurret::RotateToPlayer()
 {
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!PlayerPawn)
+	{
+		return ;
+	}
 	FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());
-	FRotator CurrentRotation = GetActorRotation();
-	TargetRotation.Pitch = CurrentRotation.Pitch;
-	TargetRotation.Roll = CurrentRotation.Roll;
-	SetActorRotation(FMath::RInterpConstantTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), TargetingSpeed));
+	FRotator CurrRotation = GetActorRotation();
+	TargetRotation.Pitch = CurrRotation.Pitch;
+	TargetRotation.Roll = CurrRotation.Roll;
+	SetActorRotation(FMath::RInterpConstantTo(CurrRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), TargetingSpeed));
 }
 
 bool AEnemyTurret::IsReadyToFire()
 {
+	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!PlayerPawn)
+	{
+		return false;
+	}
 	FVector TargetingDir = GetActorForwardVector();
 	FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
 	DirToPlayer.Normalize();

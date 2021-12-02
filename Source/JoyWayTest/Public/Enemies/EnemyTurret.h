@@ -50,9 +50,6 @@ protected:
 	UPROPERTY()
 	class ABaseWeapon* Weapon;
 
-	UPROPERTY()
-	APawn* PlayerPawn;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -63,6 +60,7 @@ public:
 	UFUNCTION()
 	void OnDie();
 
+
 private:
 	
 	void Targeting();
@@ -72,5 +70,4 @@ private:
 
 	FTimerHandle FireTimerHandle;
 	void Fire();
-
 };

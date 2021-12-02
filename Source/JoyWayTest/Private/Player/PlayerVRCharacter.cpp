@@ -171,7 +171,6 @@ void APlayerVRCharacter::ApplyDamage(float DamageAmount)
 
 void APlayerVRCharacter::OnDie()
 {
-	RespawnPlayer();
 	Destroy();
 }
 

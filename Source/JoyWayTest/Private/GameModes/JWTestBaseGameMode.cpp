@@ -19,12 +19,13 @@ void AJWTestBaseGameMode::Respawn(AController* Controller)
 
 void AJWTestBaseGameMode::Spawn(AController* Controller)
 {
-	FVector PlayerStartLocation(-100,0,92);// = FindPlayerStart(Controller)->GetActorLocation();
-	FRotator PlayerStartRotation(0,0,0);// = FindPlayerStart(Controller)->GetActorRotation();
+	FVector PlayerStartLocation = FindPlayerStart(Controller)->GetActorLocation();
+	FRotator PlayerStartRotation = FindPlayerStart(Controller)->GetActorRotation();
 	if (APawn* Pawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, PlayerStartLocation, PlayerStartRotation))
 	{
 		Controller->Possess(Pawn);
 	}
+
 }
 
 
