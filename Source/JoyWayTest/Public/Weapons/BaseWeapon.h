@@ -76,6 +76,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetCurrentAmmoInClip() const {return CurrentAmmoInClip;}
+
+	FVector GetProjectileSpawnPointLocation() const {return ProjectileSpawnPoint->GetComponentLocation();}
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Collectable")

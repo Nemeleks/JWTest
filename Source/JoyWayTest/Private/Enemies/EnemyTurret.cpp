@@ -105,15 +105,19 @@ bool AEnemyTurret::IsPlayerInRange()
 	}
 
 	FHitResult HitResult;
-	FVector TraceStart = Weapon->GetActorLocation();
+	FVector TraceStart = GetActorLocation();
 	FVector TraceEnd = PlayerPawn->GetActorLocation();
-	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("Turret Vission Trace")), true, Weapon);
+	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("Turret Vission Trace")), true, this);
 	TraceParams.bReturnPhysicalMaterial = false;
 
+DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Blue, false, -1, 0, 2);
+	
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, TraceParams))
 	{
+		
 		if (HitResult.Actor == PlayerPawn)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("OK"));
 			return true;
 		}
 	}
@@ -151,7 +155,12 @@ bool AEnemyTurret::IsReadyToFire()
 	FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
 	DirToPlayer.Normalize();
 	float AimAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDir, DirToPlayer)));
-	return AimAngle <= Accuracy;
+	if (AimAngle <= Accuracy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OK"));
+		return true;
+	}
+	return false;
 }
 
 void AEnemyTurret::Fire()
