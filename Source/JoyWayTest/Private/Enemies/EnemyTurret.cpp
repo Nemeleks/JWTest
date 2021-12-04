@@ -7,8 +7,10 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/HealthComp.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Player/PlayerVRCharacter.h"
 #include "Weapons/BaseWeapon.h"
 
 // Sets default values
@@ -32,6 +34,10 @@ AEnemyTurret::AEnemyTurret()
 	HealthComponent = CreateDefaultSubobject<UHealthComp>(TEXT("HealthComponent"));
 	HealthComponent->OnDie.AddDynamic(this, &AEnemyTurret::OnDie);
 
+	TargetingSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TeargetingSphere"));
+	TargetingSphere->SetupAttachment(RootComponent);
+	TargetingSphere->SetSphereRadius(TargetingSphereRadius, true);
+
 	WeaponSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("WeaponSpawnPoint"));
 	WeaponSpawnPoint->SetupAttachment(MeshComponent);
 
@@ -50,6 +56,8 @@ void AEnemyTurret::BeginPlay()
 	Weapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, WeaponSpawnPoint->GetComponentLocation(), WeaponSpawnPoint->GetComponentRotation());
 	Weapon->DisablePhysics();
 	Weapon->AttachToComponent(WeaponSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	PlayerPawn = Cast<APlayerVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 }
 
@@ -57,8 +65,12 @@ void AEnemyTurret::BeginPlay()
 void AEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	Targeting();
+
+	if (PlayerPawn->IsAlive())
+	{
+		Targeting();
+	}
+
 }
 
 void AEnemyTurret::ApplyDamage(float DamageAmount)
@@ -94,29 +106,30 @@ void AEnemyTurret::Targeting()
 
 bool AEnemyTurret::IsPlayerInRange()
 {
-	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (!PlayerPawn)
-	{
-		return false;
-	}
-	if (FVector::DistSquared(PlayerPawn->GetActorLocation(), GetActorLocation()) > FMath::Square(TargetingRange))
-	{
-		return false;
-	}
-
 	FHitResult HitResult;
-	FVector TraceStart = Weapon->GetActorLocation();
+	FVector TraceStart = Weapon->GetProjectileSpawnPointLocation();
 	FVector TraceEnd = PlayerPawn->GetActorLocation();
 	FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("Turret Vission Trace")), true, Weapon);
 	TraceParams.bReturnPhysicalMaterial = false;
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, TraceParams))
+//	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Blue, false, -1, 0, 2);
+	
+	TArray<AActor*> OverlappedActors;
+	TargetingSphere->GetOverlappingActors(OverlappedActors, PlayerPawnClass);
+	
+	
+	if (OverlappedActors.Contains(PlayerPawn) && PlayerPawn->IsAlive())
 	{
-		if (HitResult.Actor == PlayerPawn)
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Pawn, TraceParams))
 		{
-			return true;
+		
+			if (HitResult.Actor == PlayerPawn)
+			{
+				return true;
+			}
 		}
 	}
+	
 	if (GetWorld()->GetTimerManager().IsTimerActive(FireTimerHandle))
 	{
 		GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
@@ -128,7 +141,6 @@ bool AEnemyTurret::IsPlayerInRange()
 
 void AEnemyTurret::RotateToPlayer()
 {
-	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerPawn)
 	{
 		return ;
@@ -142,7 +154,6 @@ void AEnemyTurret::RotateToPlayer()
 
 bool AEnemyTurret::IsReadyToFire()
 {
-	APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerPawn)
 	{
 		return false;
@@ -151,19 +162,26 @@ bool AEnemyTurret::IsReadyToFire()
 	FVector DirToPlayer = PlayerPawn->GetActorLocation() - GetActorLocation();
 	DirToPlayer.Normalize();
 	float AimAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(TargetingDir, DirToPlayer)));
-	return AimAngle <= Accuracy;
+	if (AimAngle <= Accuracy)
+	{
+		return true;
+	}
+	return false;
 }
 
 void AEnemyTurret::Fire()
 {
-	if (Weapon->GetCurrentAmmoInClip() == 0)
+	if ((Weapon->GetCurrentAmmoInClip() == 0) || (!PlayerPawn->IsAlive()))
 	{
 		Weapon->Reload();
 		GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 	}
 	else
 	{
-		Weapon->Fire();
+		if (Weapon)
+		{
+			Weapon->Fire();
+		}
 	}
 	
 }

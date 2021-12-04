@@ -77,5 +77,7 @@ void ABaseProjectile::OnProjectileStop(const FHitResult& ImpactResult)
 
 void ABaseProjectile::FireInDirection(const FVector& ShootDirection)
 {
+
 	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
+	
 }

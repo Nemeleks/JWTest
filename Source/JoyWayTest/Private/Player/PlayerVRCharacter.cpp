@@ -10,7 +10,6 @@
 #include "Components/WidgetComponent.h"
 #include "Components/WidgetInteractionComponent.h"
 #include "GameFramework/GameModeBase.h"
-#include "GameModes/JWTestBaseGameMode.h"
 #include "Weapons/BaseWeapon.h"
 
 // Sets default values
@@ -67,12 +66,6 @@ void APlayerVRCharacter::BeginPlay()
 	Super::BeginPlay();
 	LeftWeaponAmmo->SetVisibility(false);
 	RightWeaponAmmo->SetVisibility(false);
-}
-
-void APlayerVRCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	RespawnPlayer();
-	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -171,7 +164,19 @@ void APlayerVRCharacter::ApplyDamage(float DamageAmount)
 
 void APlayerVRCharacter::OnDie()
 {
-	Destroy();
+	bIsAlive = false;
+	
+	GrabLeftReleased();
+	GrabRightReleased();
+	
+	GetWorld()->GetFirstPlayerController()->UnPossess();
+
+	GetWorld()->GetTimerManager().SetTimer(RespawnDelayHandle, this, &APlayerVRCharacter::RespawnPlayer, 5.f, false, -1.f);
+}
+
+bool APlayerVRCharacter::IsAlive()
+{
+	return bIsAlive;
 }
 
 void APlayerVRCharacter::FireRightWeapon()
@@ -215,13 +220,14 @@ void APlayerVRCharacter::ResetRotationDelay()
 
 void APlayerVRCharacter::RespawnPlayer()
 {
-	GrabLeftReleased();
-	GrabRightReleased();
-	AJWTestBaseGameMode* GameMode = Cast<AJWTestBaseGameMode>(GetWorld()->GetAuthGameMode());
-	if (GameMode)
-	{
-		GameMode->Respawn(GetWorld()->GetFirstPlayerController());
-	}
+	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
+	
+	FVector StartLocation = GameMode->FindPlayerStart(GetWorld()->GetFirstPlayerController())->GetActorLocation();
+	SetActorLocation(StartLocation);
+	HealthComponent->SetMaxHealth();
+	GetWorld()->GetFirstPlayerController()->Possess(this);
+	bIsAlive = true;
+	GetWorld()->GetTimerManager().ClearTimer(RespawnDelayHandle);
 }
 
 void APlayerVRCharacter::GrabRightPressed()
@@ -252,7 +258,6 @@ void APlayerVRCharacter::GrabRightReleased()
 		}
 		RightHeldObject->Drop(RightMoController);
 		RightHeldObject = nullptr;
-
 	}
 }
 
@@ -310,9 +315,6 @@ void APlayerVRCharacter::RightTurn(float Amount)
 			AddControllerYawInput(SnapTurnDegrees*Amount);
 			GetWorld()->GetTimerManager().SetTimer(TurnDelayTimerHandle, this, &APlayerVRCharacter::ResetRotationDelay, TurnDelayRate, false, -1 );
 		}
-			
-		
-		
 	}
 
 }

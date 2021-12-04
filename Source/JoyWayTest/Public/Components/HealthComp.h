@@ -34,6 +34,8 @@ public:
 
 	float GetHealth() const {return CurrentHealth;}
 
+	void SetMaxHealth() { CurrentHealth = MaxHealth;}
+
 private:
 	float CurrentHealth = 0.f;
 
