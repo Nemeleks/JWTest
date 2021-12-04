@@ -34,6 +34,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<class ABaseWeapon> WeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class USphereComponent* TargetingSphere;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	float TargetingSphereRadius = 1000.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
+	TSubclassOf<APawn> PlayerPawnClass;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
 	float TargetingRange = 2000.f;
@@ -49,6 +58,9 @@ protected:
 
 	UPROPERTY()
 	class ABaseWeapon* Weapon;
+
+	UPROPERTY()
+	class APlayerVRCharacter* PlayerPawn;
 
 public:	
 	// Called every frame

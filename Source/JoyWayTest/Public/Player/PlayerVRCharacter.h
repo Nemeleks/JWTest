@@ -19,8 +19,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	USceneComponent* VRRoot;
@@ -97,6 +95,8 @@ public:
 	UFUNCTION()
 	void OnDie();
 
+	bool IsAlive();
+
 private:
 
 	void RightTurn(float Amount);
@@ -128,6 +128,10 @@ private:
 	class ICollectable* LeftHeldObject = nullptr;
 	
 	void RespawnPlayer();
+
+	bool bIsAlive = true;
+
+	FTimerHandle RespawnDelayHandle;
 	
 };
 
